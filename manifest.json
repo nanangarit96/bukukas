@@ -1,0 +1,18 @@
+
+{
+  "name": "BukuKas Pro",
+  "short_name": "BukuKas",
+  "description": "Aplikasi Pembukuan Digital Profesional",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2654/2654290.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
