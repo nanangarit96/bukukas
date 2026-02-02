@@ -20,55 +20,55 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-2xl text-white mb-4 shadow-lg shadow-indigo-200">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] px-4">
+      <div className="max-w-[400px] w-full bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-10 border border-slate-100">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-slate-900 rounded-2xl text-white mb-6 shadow-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h2 className="text-3xl font-bold text-slate-900">BukuKas Pro</h2>
-          <p className="text-slate-500 mt-2">Kelola keuangan Anda dengan profesional</p>
+          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">BukuKas Pro</h2>
+          <p className="text-slate-400 text-sm mt-2 font-medium">Kelola keuangan Anda secara profesional</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Alamat Email</label>
             <input
               type="email"
               required
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none transition-all text-sm"
               placeholder="nama@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Kata Sandi</label>
             <input
               type="password"
               required
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-slate-900/5 focus:border-slate-900 outline-none transition-all text-sm"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-rose-500 text-xs font-medium text-center">{error}</p>}
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-indigo-700 transform transition-active active:scale-95 shadow-lg shadow-indigo-100"
+            className="w-full bg-slate-900 text-white py-3.5 px-4 rounded-xl font-bold text-sm hover:bg-slate-800 transform transition-all active:scale-[0.98] shadow-lg shadow-slate-200"
           >
             Masuk Sekarang
           </button>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
-          <p className="text-slate-500 text-sm">
-            Belum punya akun? <span className="text-indigo-600 font-medium cursor-pointer">Daftar gratis</span>
+        <div className="mt-10 pt-6 border-t border-slate-50 text-center">
+          <p className="text-slate-400 text-xs font-medium">
+            Belum punya akun? <span className="text-slate-900 font-bold cursor-pointer hover:underline">Daftar gratis</span>
           </p>
         </div>
       </div>
