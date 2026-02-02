@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Transaction, TransactionType } from '../types';
 import SummaryCards from './SummaryCards';
 import TransactionList from './TransactionList';
@@ -11,11 +11,13 @@ interface DashboardProps {
   onAdd: (t: Omit<Transaction, 'id' | 'createdAt'>) => void;
   onDelete: (id: string) => void;
   onUpdate: (updated: Transaction) => void;
+  setTransactions?: React.Dispatch<React.SetStateAction<Transaction[]>>; // Needed for import
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, onUpdate }) => {
+const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, onUpdate, setTransactions }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Filtering states
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
@@ -58,7 +60,6 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, on
   }, [filteredTransactions]);
 
   const chartData = useMemo(() => {
-    // Current month overview by days
     const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
     const data = [];
     for (let i = 1; i <= daysInMonth; i++) {
@@ -93,14 +94,50 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, on
 
   const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4'];
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = () => window.print();
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify(transactions, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `bukukas_pro_backup_${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target?.result as string);
+        if (Array.isArray(json) && setTransactions) {
+          if (confirm('Impor data akan menggabungkan dengan data saat ini. Lanjutkan?')) {
+            setTransactions(prev => [...json, ...prev]);
+            alert('Data berhasil diimpor!');
+          }
+        }
+      } catch (err) {
+        alert('File tidak valid!');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleReset = () => {
+    if (confirm('PERINGATAN: Semua data transaksi akan dihapus permanen. Apakah Anda yakin?')) {
+      if (setTransactions) setTransactions([]);
+    }
   };
 
   return (
     <div className="space-y-8">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 no-print">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 no-print">
         <div className="space-y-4">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Laporan Keuangan</h1>
@@ -111,21 +148,59 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, on
             <select 
               value={selectedMonth} 
               onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
             >
               {months.map((m, i) => <option key={m} value={i}>{m}</option>)}
             </select>
             <select 
               value={selectedYear} 
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer"
             >
               {years.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3">
+          <div className="flex bg-white border border-slate-200 rounded-xl shadow-sm p-1">
+            <button 
+              onClick={handleExport}
+              title="Backup Data ke JSON"
+              className="p-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              title="Impor Data dari JSON"
+              className="p-2.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </button>
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleImport} 
+              accept=".json" 
+              className="hidden" 
+            />
+            <div className="w-px h-full bg-slate-100 mx-1"></div>
+            <button 
+              onClick={handleReset}
+              title="Reset Semua Data"
+              className="p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+
           <button 
             onClick={handlePrint}
             className="inline-flex items-center justify-center space-x-2 bg-white border border-slate-200 text-slate-700 px-5 py-3 rounded-xl font-semibold hover:bg-slate-50 transition-all shadow-sm"
@@ -133,8 +208,9 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, on
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            <span>Cetak Laporan</span>
+            <span>Cetak</span>
           </button>
+          
           <button 
             onClick={() => setShowAddModal(true)}
             className="inline-flex items-center justify-center space-x-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
@@ -228,6 +304,13 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, on
           />
         </div>
       </div>
+
+      <footer className="no-print pt-8 pb-4 text-center">
+        <div className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 bg-slate-100 px-4 py-2 rounded-full">
+          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+          <span>Data disimpan lokal secara otomatis</span>
+        </div>
+      </footer>
 
       {(showAddModal || editingTransaction) && (
         <TransactionForm 
