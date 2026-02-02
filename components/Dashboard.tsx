@@ -68,33 +68,43 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, on
         <div>
           <h1 className="text-xl font-bold text-slate-900 uppercase tracking-tighter">Ringkasan Keuangan</h1>
           <div className="flex gap-2 mt-1">
-            <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))} className="text-xs font-bold text-slate-500 bg-transparent outline-none">
+            <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))} className="text-xs font-bold text-slate-500 bg-transparent outline-none cursor-pointer hover:text-slate-900">
               {months.map((m, i) => <option key={i} value={i}>{m}</option>)}
             </select>
-            <select value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))} className="text-xs font-bold text-slate-500 bg-transparent outline-none">
+            <select value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))} className="text-xs font-bold text-slate-500 bg-transparent outline-none cursor-pointer hover:text-slate-900">
               {years.map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-           <button onClick={handleExport} className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50" title="Backup">
-              <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-           </button>
-           <button onClick={() => fileInputRef.current?.click()} className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50" title="Impor">
-              <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-           </button>
+           <div className="flex items-center border border-slate-200 rounded-xl bg-white p-1">
+              <button onClick={handleExport} className="p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors" title="Download Backup">
+                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              </button>
+              <button onClick={() => fileInputRef.current?.click()} className="p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors" title="Impor Data">
+                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              </button>
+              <button onClick={() => window.print()} className="p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-50 transition-colors" title="Cetak Rekening Koran">
+                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+              </button>
+           </div>
            <input type="file" ref={fileInputRef} onChange={handleImport} className="hidden" accept=".json" />
-           <button onClick={() => window.print()} className="px-4 py-2 text-xs font-bold border border-slate-200 rounded-lg hover:bg-slate-50">Cetak</button>
-           <button onClick={() => setShowAddModal(true)} className="px-4 py-2 text-xs font-bold bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors">Catat Transaksi</button>
+           <button 
+              onClick={() => setShowAddModal(true)} 
+              className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-200 active:scale-95"
+           >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+              Tambah Transaksi
+           </button>
         </div>
       </div>
 
       <SummaryCards income={stats.income} expense={stats.expense} balance={stats.balance} />
 
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Rincian Buku Kas</h3>
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+          <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Daftar Transaksi (Rekening Koran)</h3>
         </div>
         <TransactionList 
           transactions={filteredTransactions} 
