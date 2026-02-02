@@ -23,7 +23,11 @@ const App: React.FC = () => {
     }
     
     if (savedData) {
-      setTransactions(JSON.parse(savedData));
+      try {
+        setTransactions(JSON.parse(savedData));
+      } catch (e) {
+        setTransactions([]);
+      }
     }
     
     setIsLoading(false);
@@ -88,6 +92,7 @@ const App: React.FC = () => {
           onAdd={addTransaction}
           onDelete={deleteTransaction}
           onUpdate={updateTransaction}
+          setTransactions={setTransactions}
         />
       </main>
     </div>
