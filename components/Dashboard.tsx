@@ -129,4 +129,3 @@ const Dashboard: React.FC<DashboardProps> = ({ transactions, onAdd, onDelete, on
 };
 
 export default Dashboard;
-
